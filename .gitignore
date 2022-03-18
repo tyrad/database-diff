@@ -1,0 +1,7 @@
+runtime/logs/*.log
+runtime/validCode/*.png
+.DS_Store
+runtime/dataImport/import
+db-diff
+output/*
+.idea
