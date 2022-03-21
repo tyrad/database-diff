@@ -25,7 +25,10 @@ func InitRouter() *gin.Engine {
 
 	// 嵌套路由组  /shop/xx/oo
 	dbApi := r.Group("/db")
+	// 检测数据库可以连通
 	dbApi.POST("/connectTest", api.DbConnectTest)
+	dbApi.POST("/queryTable", api.DbQueryTable)
+	dbApi.POST("/analyzeTables", api.AnalyzeTables)
 
 	return r
 }

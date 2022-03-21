@@ -16,7 +16,7 @@ var dbConfig = model.DbConfig{
 }
 
 func TestConnect(t *testing.T) {
-	enable, err := CheckConnectEnable(dbConfig)
+	enable, err := CheckConnectEnable(&dbConfig)
 	fmt.Println("数据库连接是否可用:", enable, err)
 	if err != nil {
 		panic(err)
@@ -24,7 +24,7 @@ func TestConnect(t *testing.T) {
 }
 
 func TestQueryOne(t *testing.T) {
-	d2, err := Connect(dbConfig)
+	d2, err := Connect(&dbConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +42,7 @@ type SysConfig struct {
 }
 
 func TestQueryOneMapToModel(t *testing.T) {
-	d2, err := Connect(dbConfig)
+	d2, err := Connect(&dbConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +61,7 @@ func TestQueryOneMapToModel(t *testing.T) {
 }
 
 func TestQueryMultiMapToModel(t *testing.T) {
-	d2, err := Connect(dbConfig)
+	d2, err := Connect(&dbConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -80,7 +80,7 @@ func TestQueryMultiMapToModel(t *testing.T) {
 }
 
 func TestQueryTables(t *testing.T) {
-	d2, err := Connect(dbConfig)
+	d2, err := Connect(&dbConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -95,7 +95,7 @@ func TestQueryTables(t *testing.T) {
 }
 
 func TestQueryTablesSchemaLimit(t *testing.T) {
-	d2, err := Connect(dbConfig)
+	d2, err := Connect(&dbConfig)
 	if err != nil {
 		panic(err)
 	}

@@ -19,7 +19,7 @@ func DbConnectTest(c *gin.Context) {
 		appG.Response(fmt.Sprintf("%v", err), e.ERROR, nil)
 		return
 	}
-	enable, err := db.CheckConnectEnable(form)
+	enable, err := db.CheckConnectEnable(&form)
 	fmt.Println("数据库连接是否可用:", enable, err)
 	if enable {
 		appG.Response("成功", e.SUCCESS, nil)

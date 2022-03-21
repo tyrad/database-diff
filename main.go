@@ -1,8 +1,6 @@
 package main
 
 import (
-	"db-diff/model"
-	"db-diff/pkg/db"
 	"db-diff/pkg/env"
 	"db-diff/pkg/logging"
 	"db-diff/route"
@@ -12,28 +10,10 @@ import (
 	"time"
 )
 
-func DebugDB() {
-	dbConfig := model.DbConfig{
-		Host:     "10.67.78.133",
-		User:     "phpg_nbphs_read",
-		Password: "A4hPa8ECuUD7rSmFGNGFdmrU",
-		DbName:   "chisapp",
-		Port:     5432,
-	}
-	enable, err := db.CheckConnectEnable(dbConfig)
-	fmt.Println("数据库连接是否可用:", enable, err)
-
-	d2, err := db.Connect(dbConfig)
-	row := db.QueryRow(d2, "select * from phpg_nbphs.sys_config where config_name = $1", "enableMentalIllnessFaceReg")
-	print(row)
-}
-
 // diff 功能
 func main() {
 
 	var err error
-	fmt.Println("---\n\n\n")
-	DebugDB()
 	fmt.Println("---\n\n\n")
 	port := ":8001"
 

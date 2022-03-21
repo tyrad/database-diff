@@ -1,6 +1,8 @@
 package app
 
 import (
+	"db-diff/pkg/e"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -33,5 +35,15 @@ func (g *Gin) Response(msg string, errCode int, data interface{}) {
 		Msg:  msg,
 		Data: data,
 	})
+	return
+}
+
+func (g *Gin) ResponseError(err error) {
+	g.Response(fmt.Sprintf("%v", err), e.ERROR, nil)
+	return
+}
+
+func (g *Gin) ResponseMsgError(err error, msg string) {
+	g.Response(fmt.Sprintf("%s %v", msg, err), e.ERROR, nil)
 	return
 }
