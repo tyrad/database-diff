@@ -27,16 +27,3 @@ func DbConnectTest(c *gin.Context) {
 	}
 	appG.Response(fmt.Sprintf("%v", err), e.ERROR, nil)
 }
-
-func DbConnectTest2(c *gin.Context) {
-	var (
-		appG = app.Gin{C: c}
-		form model.DbConfig
-	)
-	err := app.BindAndValid(c, &form)
-	if err != nil {
-		appG.Response(fmt.Sprintf("%v", err), e.ERROR, nil)
-		return
-	}
-	appG.Response(fmt.Sprintf("%v", form), e.SUCCESS, nil)
-}
