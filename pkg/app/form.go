@@ -5,45 +5,42 @@ import (
 	"db-diff/pkg/logging"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // BindAndValid binds and validates data
-func BindAndValid(c *gin.Context, form interface{}) (int, int) {
+func BindAndValid(c *gin.Context, form interface{}) error {
 	err := c.Bind(form)
 	if err != nil {
-		return http.StatusOK, e.INVALID_PARAMS
+		return err
 	}
 
 	valid := validation.Validation{}
 	check, err := valid.Valid(form)
 	if err != nil {
 		logging.Error(err)
-		return http.StatusInternalServerError, e.ERROR
+		return err
 	}
 	if !check {
 		MarkErrors(valid.Errors)
-		return http.StatusOK, e.INVALID_PARAMS
+		return e.MakeCommonErr("参数校验失败", nil, e.INVALID_PARAMS)
 	}
-
-	return http.StatusOK, e.SUCCESS
+	return nil
 }
 
-func BindJSONAndValid(c *gin.Context, form interface{}) (int, int) {
+func BindJSONAndValid(c *gin.Context, form interface{}) error {
 	err := c.BindJSON(form)
 	if err != nil {
-		return http.StatusOK, e.INVALID_PARAMS
+		return err
 	}
 
 	valid := validation.Validation{}
 	check, err := valid.Valid(form)
 	if err != nil {
-		return http.StatusInternalServerError, e.ERROR
+		return err
 	}
 	if !check {
 		MarkErrors(valid.Errors)
-		return http.StatusOK, e.INVALID_PARAMS
+		return e.MakeCommonErr("参数校验失败", nil, e.INVALID_PARAMS)
 	}
-
-	return http.StatusOK, e.SUCCESS
+	return nil
 }

@@ -7,7 +7,6 @@ import (
 	"db-diff/pkg/logging"
 	"db-diff/route"
 	"fmt"
-	"net"
 	"os/exec"
 	"runtime"
 	"time"
@@ -33,16 +32,14 @@ func DebugDB() {
 func main() {
 
 	var err error
-
 	fmt.Println("---\n\n\n")
-
 	DebugDB()
 	fmt.Println("---\n\n\n")
 	port := ":8001"
 
 	// 生产环境使用随机端口
 	if env.IsDebug() == false {
-		pt, err := GetFreePort()
+		pt, err := env.GetFreePort()
 		if err == nil {
 			port = fmt.Sprintf(":%v", pt)
 		}
@@ -89,18 +86,4 @@ func Open(uri string) error {
 		cmd := exec.Command(run, uri)
 		return cmd.Start()
 	}
-}
-
-func GetFreePort() (int, error) {
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
-	if err != nil {
-		return 0, err
-	}
-
-	l, err := net.ListenTCP("tcp", addr)
-	if err != nil {
-		return 0, err
-	}
-	defer l.Close()
-	return l.Addr().(*net.TCPAddr).Port, nil
 }

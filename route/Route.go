@@ -23,5 +23,9 @@ func InitRouter() *gin.Engine {
 	// 批量导入功能 文件上传
 	r.POST("yxx/uploadFile", api.UploadFile)
 
+	// 嵌套路由组  /shop/xx/oo
+	dbApi := r.Group("/db")
+	dbApi.POST("/connectTest", api.DbConnectTest)
+
 	return r
 }
