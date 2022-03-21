@@ -14,3 +14,5 @@ DEBUG=1 go run main.go
 
 
 // 配置 默认 筛选schema等
+
+// 序列问题 当前表的自增最大值获取

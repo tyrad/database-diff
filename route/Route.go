@@ -14,12 +14,6 @@ func InitRouter() *gin.Engine {
 	// 网站配置
 	site.ConfigWebSite(r)
 
-	// 关联查询字典值
-	r.GET("/yxx/getHospitalCode", api.GetHospitalCode)
-
-	// 加载区域编码
-	r.GET("yxx/getAreaCode", api.GetAreaCode)
-
 	// 批量导入功能 文件上传
 	r.POST("yxx/uploadFile", api.UploadFile)
 
