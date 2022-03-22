@@ -1,6 +1,10 @@
 package model
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"reflect"
+)
 
 type DbTableInfo struct {
 	TableCatalog           sql.NullString `json:"tableCatalog"`           //  当前数据库名称
@@ -20,4 +24,64 @@ type DbTableInfo struct {
 	IntervalPrecision      sql.NullString `json:"intervalPrecision"`
 	UdtName                sql.NullString `json:"udtName"`       // 字段类型 名称*
 	ColumnComment          sql.NullString `json:"columnComment"` // 字段备注
+}
+
+// Equal 比较是否相同
+func (f *DbTableInfo) Equal(other *DbTableInfo) bool {
+	val := reflect.ValueOf(f).Elem()
+	otherFields := reflect.Indirect(reflect.ValueOf(other))
+	for i := 0; i < val.NumField(); i++ {
+		typeField := val.Type().Field(i)
+		value := val.Field(i)
+		otherValue := otherFields.FieldByName(typeField.Name)
+		if value.Interface() != otherValue.Interface() {
+			return false
+		}
+	}
+	return true
+}
+
+var FieldComment = map[string]string{
+	"TableCatalog":           "当前数据库名称",
+	"TableSchema":            "schema名称",
+	"TableName":              "表名",
+	"ColumnName":             "字段名",
+	"OrdinalPosition":        "字段排序",
+	"ColumnDefault":          "字段默认值的表达式",
+	"IsNullable":             "是否可以为空",
+	"DataType":               "数据类型",
+	"CharacterMaximumLength": "字符串最大长度",
+	"CharacterOctetLength":   "数据最大字节长度",
+	"NumericPrecision":       "有效数字的数量",
+	"NumericScale":           "小数有效数字",
+	"DatetimePrecision":      "时间精度",
+	"IntervalType":           "IntervalType",
+	"IntervalPrecision":      "IntervalPrecision",
+	"UdtName":                "字段类型",
+	"ColumnComment":          "字段备注",
+}
+
+// EqualAndExtractErrFields 比较字段是否相同，并提取不同的字段
+func (f *DbTableInfo) EqualAndExtractErrFields(other *DbTableInfo) (bool, []string, []string) {
+	val := reflect.ValueOf(f).Elem()
+	otherFields := reflect.Indirect(reflect.ValueOf(other))
+	var errFields []string
+	var descriptionField []string
+	for i := 0; i < val.NumField(); i++ {
+		typeField := val.Type().Field(i)
+		value := val.Field(i)
+		otherValue := otherFields.FieldByName(typeField.Name)
+		if value.Interface() != otherValue.Interface() {
+			errFields = append(errFields, typeField.Name)
+			s := FieldComment[typeField.Name]
+			if s == "" {
+				s = typeField.Name
+			}
+			descriptionField = append(descriptionField, fmt.Sprintf("%s【%s】", s, typeField.Name))
+		}
+	}
+	if len(errFields) > 0 {
+		return false, errFields, descriptionField
+	}
+	return true, errFields, descriptionField
 }

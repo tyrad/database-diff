@@ -25,7 +25,9 @@ func TestChain_Process(t *testing.T) {
 		},
 		TableNames: []string{"account"},
 	})
-	accountValid := NewChain("验证问题", connectFilter)
+	// 2. 比较表
+	compareTableFilter := NewCompareTable()
+	accountValid := NewChain("验证问题", connectFilter, compareTableFilter)
 	_, err := accountValid.Process(0)
 	if err != nil {
 		t.Fatal(err)

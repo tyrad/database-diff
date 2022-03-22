@@ -108,6 +108,30 @@ func TestQueryTablesSchemaLimit(t *testing.T) {
 	}
 }
 
+func TestGetTablesInfo(*testing.T) {
+	d2, err := Connect(&dbConfig)
+	if err != nil {
+		panic(err)
+	}
+	tables, err := DbAnalyzeTables(d2, "sys_config")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(tables)
+}
+
+func TestGetTablesInfo2(*testing.T) {
+	d2, err := Connect(&dbConfig)
+	if err != nil {
+		panic(err)
+	}
+	tables, err := DbAnalyzeConstraint(d2, "sys_config")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(tables)
+}
+
 func TestGetTableInfo(*testing.T) {
 	d2, err := Connect(&dbConfig)
 	if err != nil {
