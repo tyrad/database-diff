@@ -31,10 +31,12 @@ func (ct *CompareTable) Process(data Request) (Response, error) {
 		mainTableFields, mErr := db.DbAnalyzeTables(mainDb, tableName)
 		compareTableFields, cErr := db.DbAnalyzeTables(compareDb, tableName)
 		if cErr != nil {
-			return nil, e.MakeCommonErr(fmt.Sprintf("查询主库【%s】表信息失败", tableName), nil, e.ERROR)
+			fmt.Println(fmt.Sprintf("查询主库【%s】表信息失败", tableName))
+			continue
 		}
 		if mErr != nil {
-			return nil, e.MakeCommonErr(fmt.Sprintf("查询对比库【%s】表信息失败", tableName), nil, e.ERROR)
+			fmt.Println(fmt.Sprintf("查询对比库【%s】表信息失败", tableName))
+			continue
 		}
 		fmt.Println("对比表字段信息:", tableName)
 		// 1. 比较字段数量是否一致
@@ -75,7 +77,54 @@ func (ct *CompareTable) Process(data Request) (Response, error) {
 			}
 		}
 		// 3. 检测约束是否一致
-
+		mainConstraint, aErr := db.DbAnalyzeConstraint(mainDb, tableName)
+		compareConstraint, bErr := db.DbAnalyzeConstraint(compareDb, tableName)
+		if aErr != nil {
+			fmt.Println(fmt.Sprintf("【%s】主表检测约束失败，差异见 %v", tableName, aErr))
+			continue
+		}
+		if bErr != nil {
+			fmt.Println(fmt.Sprintf("【%s】比较表表检测约束失败，差异见 %v", tableName, aErr))
+			continue
+		}
+		// 3.1 约束个数不同
+		if len(mainConstraint) != len(compareConstraint) {
+			fmt.Println(fmt.Sprintf("【%s】约束个数不一致 -> TODO 点击查看详情", tableName))
+			var mainTableFieldsNames []string
+			var compareTableFieldsNames []string
+			for _, ff := range mainConstraint {
+				mainTableFieldsNames = append(mainTableFieldsNames, ff.ConstraintDescription.String)
+			}
+			for _, ff := range compareConstraint {
+				compareTableFieldsNames = append(compareTableFieldsNames, ff.ConstraintDescription.String)
+			}
+			added, removed := Arrcmp(mainTableFieldsNames, compareTableFieldsNames)
+			fmt.Println(fmt.Sprintf("概览【%s】表字段不一致。 对比主表新增约束%v  缺少约束%v", tableName, added, removed))
+		}
+		// 3.2 比较具体约束
+		fmt.Println("检测表约束", tableName)
+		for _, mFiled := range mainConstraint {
+			constraintDescription := mFiled.ConstraintDescription
+			// 查询出过滤信息
+			var cFiled *model.DbTableConstraint
+			for _, ff := range compareConstraint {
+				if ff.ConstraintDescription == constraintDescription {
+					cFiled = ff
+					break
+				}
+			}
+			if cFiled == nil {
+				fmt.Println(fmt.Sprintf("比较表缺少约束 %s %s", cFiled.ConName.String, cFiled.ConstraintDescription.String))
+				continue
+			}
+			// 比较具体信息
+			isEqual, _, errDescription := mFiled.EqualAndExtractErrFields(cFiled)
+			if isEqual {
+				fmt.Println(fmt.Sprintf("【%s】 检测约束通过", cFiled.TableName.String))
+			} else {
+				fmt.Println(fmt.Sprintf("【%s】 检测约束失败，差异见 %v", cFiled.TableName.String, errDescription))
+			}
+		}
 	}
 	return md, nil
 }
